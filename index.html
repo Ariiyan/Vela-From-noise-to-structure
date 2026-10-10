@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vela — From noise to structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05060b;--fg:#eef3ff;--mu:#8791ad;--ln:rgba(238,243,255,.16);--ac:#ff7a54;--d:'Syne',system-ui,sans-serif;color-scheme:dark;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1.02rem/1.55 'Hanken Grotesk',system-ui,sans-serif;font-variant-numeric:tabular-nums;overflow-x:hidden}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+a{color:inherit}:focus-visible{outline:2px solid var(--fg);outline-offset:4px}
+.hud{position:fixed;z-index:5;font-size:.82rem;color:var(--mu)}
+.logo{left:1.6rem;top:calc(1.3rem + env(safe-area-inset-top,0px));font:800 1.35rem var(--d);letter-spacing:-.03em;color:var(--fg);text-decoration:none}
+.chap{right:1.6rem;top:calc(1.4rem + env(safe-area-inset-top,0px));text-align:right}
+.chap b{color:var(--fg);font-weight:500}
+.stats{left:1.6rem;bottom:calc(1.3rem + env(safe-area-inset-bottom,0px));display:flex;gap:1.6rem}
+.stats span b{color:var(--fg);font-weight:500}
+.hint{right:1.6rem;bottom:calc(1.3rem + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:.8rem;transition:opacity .5s}
+.hint i{width:1px;height:2.4rem;background:linear-gradient(var(--fg),transparent);animation:d 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes d{0%{transform:scaleY(0)}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+.rail{position:fixed;left:1.6rem;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:1.1rem}
+.rail a{display:flex;align-items:center;gap:.8rem;font-size:.8rem;color:var(--mu);text-decoration:none}
+.rail a::before{content:"";width:14px;height:1px;background:currentColor;transition:width .4s,background .4s}
+.rail a span{opacity:0;transform:translateX(-6px);transition:.4s}
+.rail a.on{color:var(--fg)}.rail a.on::before{width:34px;background:var(--ac);box-shadow:0 0 10px var(--ac)}.rail a.on span{opacity:1;transform:none}
+main{position:relative;z-index:2}
+.ch{height:160vh}
+.st{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:flex-end;padding:0 clamp(1.6rem,6vw,6rem) 13vh clamp(1.6rem,9vw,9rem)}
+.pn{opacity:var(--o,0);max-width:60rem}
+h1,h2{font-family:var(--d);font-weight:700;letter-spacing:-.045em;line-height:.95;margin:0 0 1.2rem;font-size:clamp(2.6rem,7.4vw,7rem);
+  clip-path:inset(-.1em calc((1 - var(--o,0)) * 100%) -.15em 0)}
+.pn p{margin:0;color:var(--mu);max-width:25rem;transform:translateY(calc((1 - var(--o,0)) * 24px))}
+#c4 .st{justify-content:center;text-align:center;padding-left:clamp(1.6rem,6vw,6rem)}
+#c4 p{margin:0 auto 1.6rem}
+.btn{display:inline-block;padding:.9rem 1.8rem;border-radius:999px;background:var(--fg);color:var(--bg);text-decoration:none;font-weight:600;transition:transform .3s,background .3s}
+.btn:hover{background:var(--ac);transform:scale(1.04)}
+.nogl .ch{height:auto}.nogl .st{position:static;height:auto;padding-top:5rem}.nogl .pn{--o:1}
+@media(max-width:800px){.rail,.stats{display:none}.st{padding-left:1.6rem;padding-bottom:9vh}}
+@media(prefers-reduced-motion:reduce){.hint i{animation:none}}
+</style>
+</head>
+<body>
+<a class="hud logo" href="#c0">vela</a>
+<div class="hud chap"><b id="cn">01</b> / 05 &nbsp; <span id="cl">Signal</span></div>
+<nav class="rail" aria-label="Chapters"><a href="#c0"><span>Signal</span></a><a href="#c1"><span>Structure</span></a><a href="#c2"><span>Surface</span></a><a href="#c3"><span>Reasoning</span></a><a href="#c4"><span>Vela</span></a></nav>
+<div class="hud stats"><span><b id="np">50,176</b> particles</span><span><b id="fp">60</b> fps</span><span><b id="sp">0</b>% scrolled</span></div>
+<div class="hud hint" id="hint"><i></i>Scroll</div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<main>
+  <section class="ch" id="c0"><div class="st"><div class="pn"><h1>Everything your team knows. Scattered.</h1><p>Docs, threads, tickets and calls. Thousands of signals, none of them connected.</p></div></div></section>
+  <section class="ch" id="c1"><div class="st"><div class="pn"><h2>Vela gives it structure.</h2><p>Every document, message and decision is mapped into one connected lattice.</p></div></div></section>
+  <section class="ch" id="c2"><div class="st"><div class="pn"><h2>A living map of the work.</h2><p>Peaks show what is moving. Valleys show what is stuck.</p></div></div></section>
+  <section class="ch" id="c3"><div class="st"><div class="pn"><h2>Paths, not guesses.</h2><p>Vela traces how each conclusion was reached and shows its working at every step.</p></div></div></section>
+  <section class="ch" id="c4"><div class="st"><div class="pn"><p>The AI agent that reads across your workspace, then drafts, schedules and ships the next step.</p><a class="btn" href="#c0">Get early access</a></div></div></section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,V=THREE.Vector3;
+  var NAMES=['Signal','Structure','Surface','Reasoning','Vela'];
+  var pn=[].slice.call(document.querySelectorAll('.pn')),rail=[].slice.call(document.querySelectorAll('.rail a'));
+  var cn=document.getElementById('cn'),cl=document.getElementById('cl'),sp=document.getElementById('sp'),fp=document.getElementById('fp'),hint=document.getElementById('hint');
+  var R;try{R=new THREE.WebGLRenderer({canvas:document.getElementById('gl'),antialias:false});}catch(e){document.body.classList.add('nogl');return;}
+  var PR=Math.min(devicePixelRatio,1.75);R.setPixelRatio(PR);
+  var scene=new THREE.Scene();scene.background=new THREE.Color(0x05060b);
+  var cam=new THREE.PerspectiveCamera(45,1,.1,100);
+
+  /* ---------- particle formations ---------- */
+  var g=224,N=g*g,aspect0=innerWidth/innerHeight,textW=Math.min(13,Math.max(6.5,aspect0*8.5));
+  var P=[0,1,2,3,4].map(function(){return new Float32Array(N*3);});
+  var RND=new Float32Array(N*2);
+  var cv=document.createElement('canvas');cv.width=640;cv.height=240;var cx=cv.getContext('2d');
+  cx.fillStyle='#fff';cx.font='900 210px Arial Black,Arial,sans-serif';cx.textAlign='center';cx.textBaseline='middle';cx.fillText('VELA',320,128);
+  var im=cx.getImageData(0,0,640,240).data,pts=[];
+  for(var yy=0;yy<240;yy+=2)for(var xx=0;xx<640;xx+=2)if(im[(yy*640+xx)*4+3]>128)pts.push(xx,yy);
+  var np=pts.length/2;
+  function gauss(){return (Math.random()+Math.random()+Math.random()-1.5)*.8;}
+  for(var i=0;i<N;i++){
+    var a,b,c,r,u,v,k=i*3;
+    /* 0 · scattered cloud */
+    u=Math.random()*6.2832;v=Math.acos(2*Math.random()-1);r=2+Math.pow(Math.random(),.6)*6.5;
+    P[0][k]=Math.sin(v)*Math.cos(u)*r;P[0][k+1]=Math.cos(v)*r*.6;P[0][k+2]=Math.sin(v)*Math.sin(u)*r;
+    /* 1 · nested lattice sphere */
+    var sh=i%3,idx=(i/3)|0,y=1-2*(idx+.5)/(N/3),rad=Math.sqrt(1-y*y),th=idx*2.399963,rr=1.5+sh*.65;
+    P[1][k]=Math.cos(th)*rad*rr;P[1][k+1]=y*rr;P[1][k+2]=Math.sin(th)*rad*rr;
+    /* 2 · terrain surface */
+    var ix=i%g,iz=(i/g)|0,x=(ix/g-.5)*17,z=(iz/g-.5)*17;
+    y=Math.sin(x*.6)*.8+Math.cos(z*.55)*.8+Math.sin((x+z)*1.1)*.3+2.6*Math.exp(-(x*x+z*z)/9)-1.6;
+    P[2][k]=x;P[2][k+1]=y;P[2][k+2]=z;
+    /* 3 · torus-knot reasoning path */
+    var t=Math.random()*6.2832,kr=Math.cos(3*t)+2;
+    P[3][k]=(kr*Math.cos(2*t))*1.15+gauss()*.22;P[3][k+1]=(kr*Math.sin(2*t))*1.15+gauss()*.22;P[3][k+2]=-Math.sin(3*t)*1.15+gauss()*.22;
+    /* 4 · wordmark */
+    var q=((Math.random()*np)|0)*2;
+    P[4][k]=(pts[q]/640-.5)*textW*1.06;P[4][k+1]=-(pts[q+1]/240-.5)*textW*1.06*240/640;P[4][k+2]=(Math.random()-.5)*.5;
+    RND[i*2]=Math.random();RND[i*2+1]=Math.random();
+  }
+  var geo=new THREE.BufferGeometry();
+  P.forEach(function(arr,n){geo.setAttribute('aP'+n,new THREE.BufferAttribute(arr,3));});
+  geo.setAttribute('position',geo.attributes.aP0);geo.setAttribute('aR',new THREE.BufferAttribute(RND,2));
+  var U={uS:{value:0},uT:{value:0},uIntro:{value:0},uPx:{value:PR*1.5},uAsp:{value:1},uM:{value:new THREE.Vector2(9,9)},uTint:{value:new V(.55,.68,1)}};
+  var mat=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  vertexShader:[
+  'attribute vec3 aP0,aP1,aP2,aP3,aP4;attribute vec2 aR;uniform float uS,uT,uIntro,uPx,uAsp;uniform vec2 uM;varying float vC,vA;',
+  'vec3 pick(int i){if(i==0)return aP0;if(i==1)return aP1;if(i==2)return aP2;if(i==3)return aP3;return aP4;}',
+  'void main(){float s=clamp(uS,0.,3.9999);int i=int(floor(s));float f=fract(s);f=f*f*(3.-2.*f);',
+  'vec3 p=mix(pick(i),pick(i+1),f);float tb=sin(3.14159*f);',
+  'p+=tb*1.7*vec3(sin(p.y*1.3+uT*.8+aR.x*6.),sin(p.z*1.3+uT*.7),sin(p.x*1.3+uT*.9+aR.y*6.));',
+  'p+=.035*vec3(sin(uT+aR.x*40.),cos(uT*.8+aR.y*40.),sin(uT*.6+aR.x*20.));p*=.15+.85*uIntro;',
+  'vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;',
+  'vec2 nd=gl_Position.xy/gl_Position.w;vec2 q=(nd-uM)*vec2(uAsp,1.);float d=length(q);',
+  'gl_Position.xy+=normalize(q+vec2(1e-4))/vec2(uAsp,1.)*exp(-d*d*10.)*.09*gl_Position.w;',
+  'gl_PointSize=(1.+aR.y*2.2)*uPx*(8./-mv.z)*(1.+tb*.6);vC=aR.x;vA=smoothstep(30.,8.,-mv.z)*.85+.15;}'].join('\n'),
+  fragmentShader:[
+  'uniform vec3 uTint;varying float vC,vA;',
+  'void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;float a=pow(smoothstep(.5,0.,d),1.6);',
+  'vec3 col=mix(vec3(.78,.9,1.),vec3(.36,.42,1.),vC);col=mix(col,uTint,.35);if(vC>.93)col=vec3(1.,.48,.33);',
+  'gl_FragColor=vec4(col,a*vA);}'].join('\n')});
+  var pointsObj=new THREE.Points(geo,mat);pointsObj.frustumCulled=false;scene.add(pointsObj);
+
+  /* ---------- post: bloom + velocity-driven chromatic aberration ---------- */
+  var composer=null,bloom,fx;
+  if(THREE.EffectComposer&&THREE.UnrealBloomPass&&THREE.ShaderPass){
+    composer=new THREE.EffectComposer(R);composer.setPixelRatio(PR);
+    composer.addPass(new THREE.RenderPass(scene,cam));
+    bloom=new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.85,.55,.12);composer.addPass(bloom);
+    fx=new THREE.ShaderPass({uniforms:{tDiffuse:{value:null},uAmt:{value:0},uT:{value:0}},
+      vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:['uniform sampler2D tDiffuse;uniform float uAmt,uT;varying vec2 vUv;',
+      'float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}',
+      'void main(){vec2 c=vUv-.5;float d=dot(c,c);vec2 o=c*(.0015+uAmt)*(.6+d*3.);',
+      'vec3 col=vec3(texture2D(tDiffuse,vUv+o).r,texture2D(tDiffuse,vUv).g,texture2D(tDiffuse,vUv-o).b);',
+      'col*=1.-d*1.15;col+=(h(vUv*vec2(1920.,1080.)+uT)-.5)*.03;gl_FragColor=vec4(col,1.);}'].join('\n')});
+    composer.addPass(fx);
+  }
+  function resize(){
+    var w=innerWidth,h=innerHeight,as=w/h;
+    if(composer)composer.setSize(w,h);R.setSize(w,h,false);
+    cam.aspect=as;cam.updateProjectionMatrix();U.uAsp.value=as;
+    zf=as<1?1+(1-as)*1.1:1;
+    CP[4].z=Math.max(9,textW*1.12/(2*Math.tan(cam.fov*Math.PI/360)*as));
+  }
+  var zf=1,CP=[new V(0,0,12),new V(0,0,8),new V(0,4.2,9),new V(4.5,1.2,7),new V(0,0,10)];
+  var CT=[new V(0,0,0),new V(0,0,0),new V(0,-1.2,0),new V(0,0,0),new V(0,0,0)];
+  var TINT=[[.55,.68,1],[.45,.55,1],[.4,.95,.9],[1,.62,.5],[.92,.96,1]];
+  resize();addEventListener('resize',resize);
+
+  /* ---------- scroll + loop ---------- */
+  var raw=0,sm=0,vel=0,mx=0,my=0,tmx=9,tmy=9,t0=performance.now(),last=t0,fc=0,fa=t0,lastS=-1,lastP=-1;
+  addEventListener('pointermove',function(e){tmx=e.clientX/innerWidth*2-1;tmy=-(e.clientY/innerHeight*2-1);mx=tmx;my=tmy;});
+  addEventListener('pointerleave',function(){tmx=9;tmy=9;});
+  function ss(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);}
+  function frame(now){
+    requestAnimationFrame(frame);
+    var dt=Math.min(.05,(now-last)/1000);last=now;fc++;
+    if(now-fa>500){fp.textContent=Math.round(fc*1000/(now-fa));fc=0;fa=now;}
+    var tgt=Math.min(4,scrollY/(innerHeight*1.6));
+    var prev=sm;sm+=(tgt-sm)*(reduce?1:Math.min(1,dt*5));
+    vel+=(Math.abs(sm-prev)/Math.max(dt,.001)-vel)*.1;
+    var i=Math.min(3,Math.floor(sm)),fr=sm-i,e=i+ss((fr-.22)/.56);          /* holds each shape, then morphs */
+    var t=reduce?0:(now-t0)/1000,fe=ss((fr-.22)/.56);
+    U.uS.value=e;U.uT.value=t;U.uIntro.value=reduce?1:Math.min(1,1-Math.pow(1-Math.min(1,t/2.6),4));
+    U.uM.value.x+=((tmx)-U.uM.value.x)*.15;U.uM.value.y+=((tmy)-U.uM.value.y)*.15;
+    U.uTint.value.set(TINT[i][0]+(TINT[i+1][0]-TINT[i][0])*fe,TINT[i][1]+(TINT[i+1][1]-TINT[i][1])*fe,TINT[i][2]+(TINT[i+1][2]-TINT[i][2])*fe);
+    cam.position.copy(CP[i]).lerp(CP[i+1],fe).multiplyScalar(zf);
+    cam.position.x+=(mx<5?mx:0)*.5;cam.position.y+=(my<5?my:0)*.35;
+    look.copy(CT[i]).lerp(CT[i+1],fe);cam.lookAt(look);
+    var w=ss(e-3);pointsObj.rotation.y=(t*.05+e*.9)*(1-w);pointsObj.rotation.x=Math.sin(t*.1)*.05*(1-w);
+    if(fx){fx.uniforms.uAmt.value=reduce?0:Math.min(.02,vel*.012);fx.uniforms.uT.value=t;}
+    /* panels + HUD */
+    for(var k=0;k<pn.length;k++)pn[k].style.setProperty('--o',reduce?(Math.abs(sm-k)<.5?1:0):Math.max(0,Math.min(1,1.55-Math.abs(sm-k)*2.4)).toFixed(3));
+    var si=Math.round(sm);
+    if(si!==lastS){lastS=si;cn.textContent='0'+(si+1);cl.textContent=NAMES[si];rail.forEach(function(a,n){a.className=n===si?'on':'';});}
+    var pc=Math.round(sm/4*100);if(pc!==lastP){lastP=pc;sp.textContent=pc;hint.style.opacity=pc>2?0:1;}
+    if(composer)composer.render();else R.render(scene,cam);
+  }
+  var look=new V();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
